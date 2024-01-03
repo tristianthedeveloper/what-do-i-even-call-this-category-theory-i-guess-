@@ -116,16 +116,16 @@ public class Prelude {
     }
 
     public static <T, U> Morphism<
-            Morphism<? extends T, Morphism<? extends U, ? extends U>>,
-            Morphism<? extends U, Morphism<List<T>, U>>
+            Morphism<? super T, Morphism<? super U, ? super U>>, // f
+            Morphism<? super U,  // acc
+                    Morphism<List<? extends T>, U> // structure
+                    >
             > foldr() {
-        return (Morphism<T, Morphism<U, U>> f) -> (T acc) -> (List<T> xs) -> {
-          if (length.of(xs) == 0)   return acc;
-          return f.of((T) head.of(xs)).of(foldr().of(f).of(acc).of((List<T>)tail.of(xs)));
+        return f -> acc -> xs -> {
+            if (length.of(xs) == 0) return acc;
+            return (U) f.of((T) head.of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of((List<T>) tail.of(xs)));
         };
-
     }
-
 
 
 }

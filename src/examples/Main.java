@@ -30,6 +30,7 @@ public class Main {
         System.out.println(range().of(0).of(100));
 
         System.out.println(foldr(a -> b -> a + b, 0, x));
+        System.out.println(foldr().of(a -> b -> (int) a + (int) b).of(0).of(x));
 
 
 
