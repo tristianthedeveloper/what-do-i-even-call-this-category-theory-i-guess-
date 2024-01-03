@@ -21,6 +21,20 @@ public class Main {
         IntStream.range(10, 20).forEach(y::add);
         System.out.println(concat().of(x).of(y));
 
+
+        {
+            Morphism<Integer, Morphism<Integer, Morphism<Integer, Integer>>> add3 = a -> b -> c -> a + b + c;
+            var addFourToTheSumofTwoNumbers= add3.of(4); // add 4 to the sum of 2 numbers
+            var addFourToOneNumber = add3.of(1).of(3); // ok this is a really retarded example but it is the example
+            System.out.println(add3.of(1).of(2).of(3)); // 1 + 2 + 3
+            System.out.println(addFourToTheSumofTwoNumbers.of(1).of(2)); // 4 + (1 + 2)
+            System.out.println(addFourToOneNumber.of(4)); // (1 + 3) + 4
+
+
+
+        }
+
+
         System.out.println(tail.of(x));
         System.out.println(drop().of(2).of(x));
         System.out.println(last.of(x));
