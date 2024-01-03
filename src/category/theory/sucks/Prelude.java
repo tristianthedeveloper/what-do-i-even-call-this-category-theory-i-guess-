@@ -4,6 +4,8 @@ import category.theory.sucks.classes.Show;
 import category.theory.sucks.collections.List;
 import category.theory.sucks.markers.Impure;
 
+import java.util.Objects;
+
 public class Prelude {
 
 
@@ -12,6 +14,14 @@ public class Prelude {
 //        return null; i hate you
 //    };
 
+//    generation methods
+//    rangesg
+    public static Morphism<Integer, Morphism<Integer, List<Integer>>> range() {
+        return x -> y -> {
+            if (y > x) return (List<Integer>) cons().of(y).of(range().of(x).of(y-1));
+            return (List<Integer>) List.ret().of(x);
+        };
+    }
 
     // LIST METHODS
 
@@ -96,15 +106,26 @@ public class Prelude {
         };
     }
 
-/*
 
-    TODO
-    @soon(tm)
-    public static <T, U> U foldr(Morphism<? super T, ? extends U> callback, U intialValue, List<? super T> structure) {
-        if (length.of(structure) == 0) return intialValue;
+    // foldr non-morphism aka non-good TODO real boy
+    public static <T, U> U foldr(Morphism<T, Morphism<U, U>> callback,
+                                 U acc, List<T> structure) {
+        if (length.of(structure) == 0) return acc;
+        return callback.of( (T) head.of(structure)).of(
+                foldr (callback, acc, (List<T>) tail.of(structure)));
+    }
+
+    public static <T, U> Morphism<
+            Morphism<? extends T, Morphism<? extends U, ? extends U>>,
+            Morphism<? extends U, Morphism<List<T>, U>>
+            > foldr() {
+        return (Morphism<T, Morphism<U, U>> f) -> (T acc) -> (List<T> xs) -> {
+          if (length.of(xs) == 0)   return acc;
+          return f.of((T) head.of(xs)).of(foldr().of(f).of(acc).of((List<T>)tail.of(xs)));
+        };
 
     }
-*/;
+
 
 
 }

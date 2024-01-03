@@ -26,8 +26,27 @@ public class Main {
         System.out.println(last.of(x));
         System.out.println(reverse().of(x));
 
+        List<Monkey> monkeys = new List<>();
+        System.out.println(range().of(0).of(100));
+
+        System.out.println(foldr(a -> b -> a + b, 0, x));
 
 
+
+    }
+   static class Monkey {
+        private final String n;
+        private final int a;
+        private Monkey(String name, int age) {
+            this.n = name;
+            this.a = age;
+        }
+        public static Morphism<String, Morphism<Integer, Monkey>> Monkey = x -> y -> new Monkey(x, y);
+
+        // pattern matching in java is really shit
+        public static Morphism<Monkey, String> name = x -> x.n;
+
+       public static Morphism<Monkey, Integer> age = x -> x.a;
     }
 
 }

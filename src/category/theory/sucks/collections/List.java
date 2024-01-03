@@ -11,12 +11,13 @@ import java.util.LinkedList;
 public class List<T> extends LinkedList<T> implements Monad<T> {
 
 
-    /**
-     *  Injects a value into this monad
-     */
-    public static <T> List<? extends T> ret(T a) { // das all it does
-        List<T> l = new List<>();
-        l.add(a);
-        return l;
+    @Impure
+//    this is the worst one yet
+    public static <T> Morphism<T, List<? extends T>> ret() {
+        return what -> {
+            List<T> l = new List<>();
+            l.add(what);
+            return l;
+        };
     }
 }
