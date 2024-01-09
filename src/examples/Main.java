@@ -35,15 +35,14 @@ public class Main {
         }
 
 
-        System.out.println(tail.of(x));
+        System.out.println(tail().of(x));
         System.out.println(drop().of(2).of(x));
-        System.out.println(last.of(x));
+        System.out.println(last().of(x));
         System.out.println(reverse().of(x));
 
         List<Monkey> monkeys = new List<>();
         System.out.println(range().of(0).of(100));
 
-        System.out.println(foldr(a -> b -> a + b, 0, x));
         System.out.println(foldr().of(a -> b -> (int) a + (int) b).of(0).of(x));
 
 

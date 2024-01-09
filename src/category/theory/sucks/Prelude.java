@@ -4,6 +4,8 @@ import category.theory.sucks.classes.Show;
 import category.theory.sucks.collections.List;
 import category.theory.sucks.markers.Impure;
 
+import java.util.LinkedList;
+
 public class Prelude {
 
 
@@ -16,8 +18,8 @@ public class Prelude {
 //    rangesg
     public static Morphism<Integer, Morphism<Integer, List<Integer>>> range() {
         return x -> y -> {
-            if (y > x) return (List<Integer>) cons().of(y).of(range().of(x).of(y - 1));
-            return (List<Integer>) List.ret().of(x);
+            if (y > x) return Prelude.<Integer>cons().of(y).of(range().of(x).of(y - 1));
+            return List.<Integer>ret().of(x);
         };
     }
 
@@ -29,7 +31,7 @@ public class Prelude {
      * although since generics are hard you can also take anything :(
      */
     @Impure
-    public static <E> Morphism<E, Morphism<List<? extends E>, List<? extends E>>> cons() {
+    public static <E> Morphism<E, Morphism<List<? extends E>, List<E>>> cons() {
         return x -> xs -> {
             List<E> newList = new List<>();
             newList.addAll(xs);
@@ -46,7 +48,7 @@ public class Prelude {
     public static <T> Morphism<List<? extends T>, Morphism<List<? extends T>, List<? extends T>>> concat() {
         return x -> xs -> {
             if (xs.size() == 0) return x;
-            return (List<? extends T>) concat().of(cons().of(head.of(xs)).of(x)).of(tail.of(xs));
+            return (List<? extends T>) Prelude.concat().of(cons().of(head().of(xs)).of(x)).of(tail().of(xs));
         };
     }
 
@@ -58,21 +60,27 @@ public class Prelude {
     /**
      * head :: [a] -> a
      */
-    public static Morphism<List<?>, ?> head = List::getFirst;
+    public static <T> Morphism<List<? extends T>, T> head() {
+        return LinkedList::getFirst;
+    }
 
     /**
      * last :: [a] -> a
      */
-    public static Morphism<List<?>, ?> last = List::getLast;
+    public static <T> Morphism<List<? extends T>, T> last() {
+        return LinkedList::getLast;
+    }
 
     /**
      * tail :: [a] -> [a]
      */
     @Impure
-    public static Morphism<List<?>, List<?>> tail = x -> { // god damnit
-        List<?> xs = (List<?>) x.clone();
-        xs.pop(); // semi-pure?
-        return xs;
+    public static <T> Morphism<List<? extends T>, List<T>> tail() { // god damnit
+        return x -> {
+            List<T> xs = (List<T>) x.clone();
+            xs.pop(); // semi-pure?
+            return xs;
+        };
     };
     /**
      * tail :: [a] -> [a]
@@ -89,7 +97,7 @@ public class Prelude {
      */
     public static Morphism<Integer, Morphism<List<?>, List<?>>> drop() {
         return a -> xs -> {
-            if (a > 0) return drop().of(a - 1).of(tail.of(xs));
+            if (a > 0) return drop().of(a - 1).of(tail().of(xs));
             return xs;
         };
     }
@@ -100,22 +108,16 @@ public class Prelude {
     public static Morphism<List<?>, List<?>> reverse() {
         return x -> {
             if (length.of(x) == 1) return x;
-            return cons().of(head.of(x)).of(reverse().of(tail.of(x)));
+            return cons().of(head().of(x)).of(reverse().of(tail().of(x)));
         };
     }
 
-
-    // foldr non-morphism aka non-good TODO real boy
-    public static <T, U> U foldr(Morphism<T, Morphism<U, U>> callback, U acc, List<T> structure) {
-        if (length.of(structure) == 0) return acc;
-        return callback.of((T) head.of(structure)).of(foldr(callback, acc, (List<T>) tail.of(structure)));
-    }
-
-    public static <T, U> Morphism<Morphism<? super T, Morphism<? super U, ? super U>> /* f */ ,Morphism<? super U /* acc */ , Morphism<List<? extends T> /* structure */ , ? extends U>
+    public static <T, U> Morphism<Morphism<? super T, Morphism<? super U, U>> /* f */ ,Morphism<? super U /* acc */ , Morphism<List<? extends T> /* structure */ , ? extends U>
                     >> foldr() {
         return f -> acc -> xs -> {
+            // i actually got this warningless, holy.
             if (length.of(xs) == 0) return acc;
-            return (U) f.of((T) head.of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of((List<T>) tail.of(xs)));
+            return (U) f.of(Prelude.<T>head().of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of(Prelude.<T>tail().of(xs)));
         };
     }
 

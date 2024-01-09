@@ -13,7 +13,7 @@ public class List<T> extends LinkedList<T> implements Monad<T> {
 
     @Impure
 //    this is the worst one yet
-    public static <T> Morphism<T, List<? extends T>> ret() {
+    public static <T> Morphism<T, List<T>> ret() {
         return what -> {
             List<T> l = new List<>();
             l.add(what);
