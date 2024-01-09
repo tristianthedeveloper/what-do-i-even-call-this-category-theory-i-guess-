@@ -82,13 +82,15 @@ public class Prelude {
         };
     };
     /**
-     * tail :: [a] -> [a]
+     * init :: [a] -> [a]
      */
     @Impure
-    public static Morphism<List<?>, List<?>> init = x -> { // god damnit
-        List<?> xs = (List<?>) x.clone();
-        xs.removeLast();// semi-pure?
-        return xs;
+    public static <T> Morphism<List<? extends T>, List<T>> init() { // god damnit
+        return x -> {
+            List<T> xs = (List<T>) x.clone();
+            xs.removeLast(); // semi-pure?
+            return xs;
+        };
     };
 
     /**
@@ -111,12 +113,17 @@ public class Prelude {
         };
     }
 
-    public static <T, U> Morphism<Morphism<? super T, Morphism<? super U, U>> /* f */ ,Morphism<? super U /* acc */ , Morphism<List<? extends T> /* structure */ , ? extends U>
+    public static <T, U> Morphism<Morphism<T, Morphism<? super U, U>> /* f */ ,Morphism<? super U /* acc */ , Morphism<List<? extends T> /* structure */ , ? extends U>
                     >> foldr() {
         return f -> acc -> xs -> {
             if (length.of(xs) == 0) return acc;
-            return (U) f.of(Prelude.<T>head().of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of(Prelude.<T>tail().of(xs)));
+            return (U) f.of(Prelude.<T>last().of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of(Prelude.<T>init().of(xs)));
         };
+    }
+
+    public static <T, U> Morphism<Morphism<T, U>,
+            Morphism<List<? extends T>, List<? extends U>>> map() {
+        return (Morphism<T, U> f) -> (xs) -> (List<? extends U>) foldr().of(c -> acc -> cons().of(f.of((T) c)).of((List<U>) acc)).of(new List<>()).of(xs);
     }
 
 

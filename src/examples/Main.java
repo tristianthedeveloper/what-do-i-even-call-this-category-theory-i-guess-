@@ -5,12 +5,15 @@ import category.theory.sucks.Prelude;
 import category.theory.sucks.classes.Show;
 import category.theory.sucks.collections.List;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static category.theory.sucks.Prelude.*;
+import static category.theory.sucks.collections.List.ret;
 
 public class Main {
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
 
         List<Integer> x = new List<>();
@@ -42,6 +45,8 @@ public class Main {
 
         System.out.println(foldr().of(a -> b -> (int) a + (int) b).of(0).of(x));
 
+        System.out.println(foldr().of(a -> acc -> cons().of(a).of((List<?>) acc)).of(new List<Integer>()).of(range().of(0).of(10)));
+
         System.out.println(
                 Prelude.foldr()
                         .of(a ->
@@ -54,7 +59,42 @@ public class Main {
                                 .of(range()
                                         .of(0)
                                         .of(10))));
+        System.out.println(map().of(c -> (int) c + 1).of(range().of(0).of(10)));
 
+
+    }
+
+    /*
+
+    In this exercise, a string is passed to a method and a new string has to be returned with the first character of each word in the string.
+
+For example:
+
+"This Is A Test" ==> "TIAT"
+
+Strings will only contain letters and spaces, with exactly 1 space between words, and no leading/trailing spaces.
+
+my haskell solution was:
+
+solution :: String -> String
+solution x = foldr ((:) . head) "" x
+
+my java solution is polymorphic and works for any List[List[T]]
+     */
+    private static <T> Morphism<List<List<T>>, List<T>> firsts() {
+        return (List<List<T>> xs) -> (List<T>) foldr().of(x -> acc -> cons().of(head().of((List<T>) x)).of((List<T>) acc)).of(new List<T>()).of(xs);
+    }
+    @SuppressWarnings("unchecked") // i know i should fix that but jeezzus
+    private static void testFirsts() {
+        List<List<Character>> strings = (List<List<Character>>) map().of(xs -> ret((String) xs)).of(new List<>(
+                Arrays.asList("Some", "Random", "Ass", "Array", "Of", "Lists", "Of", "Characters", "Also", "Known", "As", "Strings", "But", "Not", "In", "Java")
+        ));
+        List<List<Integer>> someRanges = (List<List<Integer>>) map().of(
+                a -> ret().of(a) // convert the range into a singleton list, aka a list of list of integers
+        ).of(range().of(0).of(30));
+        System.out.println(someRanges);
+        System.out.println(Main.<Integer>firsts().of(someRanges));
+        System.out.println(Main.<Character>firsts().of(strings));
 
     }
 
