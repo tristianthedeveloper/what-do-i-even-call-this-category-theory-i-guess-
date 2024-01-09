@@ -2,11 +2,9 @@ package examples;
 
 import category.theory.sucks.Morphism;
 import category.theory.sucks.Prelude;
+import category.theory.sucks.classes.Show;
 import category.theory.sucks.collections.List;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Scanner;
 import java.util.stream.IntStream;
 
 import static category.theory.sucks.Prelude.*;
@@ -24,12 +22,11 @@ public class Main {
 
         {
             Morphism<Integer, Morphism<Integer, Morphism<Integer, Integer>>> add3 = a -> b -> c -> a + b + c;
-            var addFourToTheSumofTwoNumbers= add3.of(4); // add 4 to the sum of 2 numbers
+            var addFourToTheSumofTwoNumbers = add3.of(4); // add 4 to the sum of 2 numbers
             var addFourToOneNumber = add3.of(1).of(3); // ok this is a really retarded example but it is the example
             System.out.println(add3.of(1).of(2).of(3)); // 1 + 2 + 3
             System.out.println(addFourToTheSumofTwoNumbers.of(1).of(2)); // 4 + (1 + 2)
             System.out.println(addFourToOneNumber.of(4)); // (1 + 3) + 4
-
 
 
         }
@@ -45,22 +42,47 @@ public class Main {
 
         System.out.println(foldr().of(a -> b -> (int) a + (int) b).of(0).of(x));
 
+        System.out.println(
+                Prelude.foldr()
+                        .of(a ->
+                                acc ->
+                                        cons()
+                                                .of(new Monkey("Monkey #" + (int) a, (int) a))
+                                                .of((List<Monkey>) acc))
+                        .of(new List<Monkey>())
+                        .of(reverse()
+                                .of(range()
+                                        .of(0)
+                                        .of(10))));
 
 
     }
-   static class Monkey {
+
+    static class Monkey implements Show {
         private final String n;
         private final int a;
+
         private Monkey(String name, int age) {
             this.n = name;
             this.a = age;
         }
+
         public static Morphism<String, Morphism<Integer, Monkey>> Monkey = x -> y -> new Monkey(x, y);
 
         // pattern matching in java is really shit
         public static Morphism<Monkey, String> name = x -> x.n;
 
-       public static Morphism<Monkey, Integer> age = x -> x.a;
+        public static Morphism<Monkey, Integer> age = x -> x.a;
+
+        @Override
+        public String show() {
+            return "Monkey@[name=" + name.of(this) + ",age=" + age.of(this) + "]"; // ignore this for now
+        }
+
+        @Override
+        public String toString() {
+            return show();
+        }
     }
 
 }

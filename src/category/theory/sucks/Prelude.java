@@ -15,7 +15,6 @@ public class Prelude {
 //    };
 
     //    generation methods
-//    rangesg
     public static Morphism<Integer, Morphism<Integer, List<Integer>>> range() {
         return x -> y -> {
             if (y > x) return Prelude.<Integer>cons().of(y).of(range().of(x).of(y - 1));
@@ -115,7 +114,6 @@ public class Prelude {
     public static <T, U> Morphism<Morphism<? super T, Morphism<? super U, U>> /* f */ ,Morphism<? super U /* acc */ , Morphism<List<? extends T> /* structure */ , ? extends U>
                     >> foldr() {
         return f -> acc -> xs -> {
-            // i actually got this warningless, holy.
             if (length.of(xs) == 0) return acc;
             return (U) f.of(Prelude.<T>head().of(xs)).of(Prelude.<T, U>foldr().of(f).of(acc).of(Prelude.<T>tail().of(xs)));
         };
